@@ -8,41 +8,53 @@ def load_data(file_path):
         return json.load(handle)
 
 
+def serialize_animal(animal_obj):
+    """Serialize one animal into HTML."""
+
+    output = ""
+
+    output += '<li class="cards__item">\n'
+
+    if "name" in animal_obj:
+        output += (
+            f'<div class="card__title">'
+            f'{animal_obj["name"]}'
+            f'</div>\n'
+        )
+
+    output += '<p class="card__text">\n'
+
+    if "diet" in animal_obj["characteristics"]:
+        output += (
+            f'<strong>Diet:</strong> '
+            f'{animal_obj["characteristics"]["diet"]}<br/>\n'
+        )
+
+    if "locations" in animal_obj:
+        output += (
+            f'<strong>Location:</strong> '
+            f'{", ".join(animal_obj["locations"])}<br/>\n'
+        )
+
+    if "type" in animal_obj["characteristics"]:
+        output += (
+            f'<strong>Type:</strong> '
+            f'{animal_obj["characteristics"]["type"]}<br/>\n'
+        )
+
+    output += "</p>\n"
+    output += "</li>\n"
+
+    return output
+
+
 def generate_animals_html(data):
     """Generate HTML for all animals."""
 
-    output = ""  # define an empty string
+    output = ""
 
     for animal_data in data:
-
-        # append information to each string
-        output += '<li class="cards__item">\n'
-
-        if "name" in animal_data:
-            output += (
-                f"Name: "
-                f"{animal_data['name']}<br/>\n"
-            )
-
-        if "diet" in animal_data["characteristics"]:
-            output += (
-                f"Diet: "
-                f"{animal_data['characteristics']['diet']}<br/>\n"
-            )
-
-        if "locations" in animal_data:
-            output += (
-                f"Location: "
-                f"{', '.join(animal_data['locations'])}<br/>\n"
-            )
-
-        if "type" in animal_data["characteristics"]:
-            output += (
-                f"Type: "
-                f"{animal_data['characteristics']['type']}<br/>\n"
-            )
-
-        output += "</li>\n"
+        output += serialize_animal(animal_data)
 
     return output
 
@@ -52,14 +64,14 @@ def main():
 
     data = load_data("animals_data.json")
 
-    output = generate_animals_html(data)
+    animals_html = generate_animals_html(data)
 
     with open("animals_template.html", "r") as handle:
         html_template = handle.read()
 
     final_html = html_template.replace(
         "__REPLACE_ANIMALS_INFO__",
-        output
+        animals_html
     )
 
     with open("animals.html", "w") as handle:
