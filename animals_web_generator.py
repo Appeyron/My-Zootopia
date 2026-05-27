@@ -8,6 +8,20 @@ def load_data(file_path):
         return json.load(handle)
 
 
+def get_skin_types(data):
+    """Return all available skin types."""
+
+    skin_types = set()
+
+    for animal_obj in data:
+        characteristics = animal_obj.get("characteristics", {})
+
+        if "skin_type" in characteristics:
+            skin_types.add(characteristics["skin_type"])
+
+    return sorted(skin_types)
+
+
 def serialize_animal(animal_obj):
     """Serialize one animal into HTML."""
 
@@ -17,44 +31,51 @@ def serialize_animal(animal_obj):
 
     if "name" in animal_obj:
         output += (
-            f'<div class="card__title">'
-            f'{animal_obj["name"]}'
-            f'</div>\n'
+            f'  <div class="card__title">'
+            f'{animal_obj["name"]}</div>\n'
         )
 
-    output += '<p class="card__text">\n'
+    output += '  <div class="card__text">\n'
+    output += "    <ul>\n"
 
-    if "diet" in animal_obj["characteristics"]:
+    characteristics = animal_obj.get("characteristics", {})
+
+    if "diet" in characteristics:
         output += (
-            f'<strong>Diet:</strong> '
-            f'{animal_obj["characteristics"]["diet"]}<br/>\n'
+            f'      <li><strong>Diet:</strong> '
+            f'{characteristics["diet"]}</li>\n'
         )
 
     if "locations" in animal_obj:
         output += (
-            f'<strong>Location:</strong> '
-            f'{", ".join(animal_obj["locations"])}<br/>\n'
+            f'      <li><strong>Location:</strong> '
+            f'{", ".join(animal_obj["locations"])}</li>\n'
         )
 
-    if "type" in animal_obj["characteristics"]:
+    if "type" in characteristics:
         output += (
-            f'<strong>Type:</strong> '
-            f'{animal_obj["characteristics"]["type"]}<br/>\n'
+            f'      <li><strong>Type:</strong> '
+            f'{characteristics["type"]}</li>\n'
         )
 
-    output += "</p>\n"
+    output += "    </ul>\n"
+    output += "  </div>\n"
     output += "</li>\n"
 
     return output
 
 
-def generate_animals_html(data):
-    """Generate HTML for all animals."""
+def generate_animals_html(data, selected_skin_type):
+    """Generate HTML for animals with selected skin type."""
 
     output = ""
 
-    for animal_data in data:
-        output += serialize_animal(animal_data)
+    for animal_obj in data:
+        characteristics = animal_obj.get("characteristics", {})
+        skin_type = characteristics.get("skin_type", "")
+
+        if skin_type.lower() == selected_skin_type.lower():
+            output += serialize_animal(animal_obj)
 
     return output
 
@@ -64,7 +85,15 @@ def main():
 
     data = load_data("animals_data.json")
 
-    animals_html = generate_animals_html(data)
+    skin_types = get_skin_types(data)
+
+    print("Available skin types:")
+    for skin_type in skin_types:
+        print(f"- {skin_type}")
+
+    selected_skin_type = input("\nPlease enter a skin type: ").strip()
+
+    animals_html = generate_animals_html(data, selected_skin_type)
 
     with open("animals_template.html", "r") as handle:
         html_template = handle.read()
@@ -76,6 +105,8 @@ def main():
 
     with open("animals.html", "w") as handle:
         handle.write(final_html)
+
+    print("Website created successfully!")
 
 
 if __name__ == "__main__":
