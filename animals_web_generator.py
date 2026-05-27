@@ -65,8 +65,6 @@ def main():
     with open("animals.html", "w") as handle:
         handle.write(final_html)
 
-    print(output)
-
 
 if __name__ == "__main__":
     main()
