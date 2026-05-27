@@ -11,32 +11,38 @@ def load_data(file_path):
 def generate_animals_html(data):
     """Generate HTML for all animals."""
 
-    output = ""
+    output = ""  # define an empty string
 
     for animal_data in data:
 
+        # append information to each string
+        output += '<li class="cards__item">\n'
+
         if "name" in animal_data:
-            output += f"Name: {animal_data['name']} "
+            output += (
+                f"Name: "
+                f"{animal_data['name']}<br/>\n"
+            )
 
         if "diet" in animal_data["characteristics"]:
             output += (
                 f"Diet: "
-                f"{animal_data['characteristics']['diet']} "
+                f"{animal_data['characteristics']['diet']}<br/>\n"
             )
 
         if "locations" in animal_data:
             output += (
                 f"Location: "
-                f"{', '.join(animal_data['locations'])} "
+                f"{', '.join(animal_data['locations'])}<br/>\n"
             )
 
         if "type" in animal_data["characteristics"]:
             output += (
                 f"Type: "
-                f"{animal_data['characteristics']['type']}"
+                f"{animal_data['characteristics']['type']}<br/>\n"
             )
 
-        output += "\n</li>\n"
+        output += "</li>\n"
 
     return output
 
